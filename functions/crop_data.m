@@ -25,5 +25,11 @@ function [output_data, output_lat, output_lon] = crop_data(input_data, input_lat
     output_data = input_data(~zero_rows, :);
     output_data = output_data(:,~zero_cols);
 
+    % if isempty(output_data)
+    %     output_data = zeros(size(input_data));
+    %     output_lat = zeros(size(input_data));
+    %     output_lon = zeros(size(input_data));
+    % end
+
 
 end
