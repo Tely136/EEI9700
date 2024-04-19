@@ -86,7 +86,7 @@ for i = 1:length(dates)
         tropomi_qa = TROPOMI_data.qa_value;
         
         % Get the time TROPOMI passes over NYC
-        [~, tropomi_lat_i] = findClosestIndex(tropomi_lat, NYC_lat); 
+        [~, tropomi_lat_i] = find_closest_index(tropomi_lat, NYC_lat); 
         tropomi_time_nyc = tropomi_time(tropomi_lat_i);
         
 
@@ -108,6 +108,14 @@ for i = 1:length(dates)
         end
         [~, minindex] = min(time_diffs(time_diffs>=0));
         tempo_file = tempo_files(minindex);
+
+        if minindex ~= 1
+            % load previous file as well
+        end
+
+        if minindex ~= length(tempo_dates)
+            % load next file as well
+        end
         
         tempo_data = load_tempo_data(fullfile(tempo_path,date, tempo_file.name));
         
@@ -121,7 +129,7 @@ for i = 1:length(dates)
         tempo_qa = tempo_data.qa_value;
         
         % Get the time TEMPO passes over NYC
-        [~, tempo_lon_i] = findClosestIndex(tempo_lon, NYC_lon); 
+        [~, tempo_lon_i] = find_closest_index(tempo_lon, NYC_lon); 
         tempo_time_nyc = tempo_time(tempo_lon_i);
 
 
@@ -219,23 +227,12 @@ end
 
 %%
 
-function [row, col] = findClosestIndex(matrix, targetNumber)
-    % Compute the absolute difference between the target number and each element
-    differences = abs(matrix - targetNumber);
-    
-    % Find the linear index of the minimum difference
-    [~, linearIndex] = min(differences(:));
-    
-    % Convert the linear index to row and column indices
-    [row, col] = ind2sub(size(matrix), linearIndex);
-end
-
 function [time_lat, time_lon] = find_passover_time(sat_time, sat_lat, sat_lon, target_lat, target_lon)
 
-    [~, lat_i] = findClosestIndex(sat_lat, target_lat); 
+    [~, lat_i] = find_closest_index(sat_lat, target_lat); 
     time_lat = datetime(string(sat_time(lat_i)), 'Format','dd-MMM-uuuu HH:mm:ss');
 
-    [lon_i, ~] = findClosestIndex(sat_lon, target_lon); 
+    [lon_i, ~] = find_closest_index(sat_lon, target_lon); 
     time_lon = string(sat_time(lon_i));
 
 end

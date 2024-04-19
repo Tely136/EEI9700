@@ -12,9 +12,6 @@ function map_plot(lat, lon, param, title_str, lat_bounds, lon_bounds, color_lim,
 
     states = readgeotable("usastatelo.shp");
 
-
-
-
     usamap(lat_bounds, lon_bounds);
     surfacem(lat, lon, param)
     geoshow(states,"DisplayType","polygon", 'FaceAlpha', 0);
