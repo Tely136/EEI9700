@@ -58,7 +58,8 @@ tempo_pandora_bronx_date_arr = NaT(y,y); tempo_pandora_bronx_date_arr.TimeZone =
 
 
 % Tempo data
-folders = read_batch('input_dates_aug.txt');
+folders = read_batch('input_dates.txt');
+% folders = read_batch('input_dates_aug.txt');
 % folders = read_batch('input_dates_all.txt');
 
 for i = 1:length(folders)
@@ -116,6 +117,27 @@ for i = 1:length(folders)
     end
 end
 
+[tempo_ccny_no2_vec, i] = reshape_remove_nan(tempo_ccny_no2_arr);
+[tempo_ccny_qa_vec, ~] = reshape_remove_nan(tempo_ccny_qa_arr, i);
+[tempo_pandora_ccny_date_vec, ~] = reshape_remove_nan(tempo_pandora_ccny_date_arr, i);
+[pandora_ccny_no2_vec, ~] = reshape_remove_nan(pandora_ccny_no2_arr, i);
+
+[tempo_queens_no2_vec, i] = reshape_remove_nan(tempo_queens_no2_arr);
+[tempo_queens_qa_vec, ~] = reshape_remove_nan(tempo_queens_qa_arr, i);
+[tempo_pandora_queens_date_vec, ~] = reshape_remove_nan(tempo_pandora_queens_date_arr, i);
+[pandora_queens_no2_vec, ~] = reshape_remove_nan(pandora_queens_no2_arr, i);
+
+[tempo_bronx_no2_vec, i] = reshape_remove_nan(tempo_bronx_no2_arr);
+[tempo_bronx_qa_vec, ~] = reshape_remove_nan(tempo_bronx_qa_arr, i);
+[tempo_pandora_bronx_date_vec, ~] = reshape_remove_nan(tempo_pandora_bronx_date_arr, i);
+[pandora_bronx_no2_vec, ~] = reshape_remove_nan(pandora_bronx_no2_arr, i);
+
+var_names = {'time', 'tempo_no2', 'pandora_no2', 'qa'};
+ccny_table = table(tempo_pandora_ccny_date_vec, tempo_ccny_no2_vec, pandora_ccny_no2_vec, tempo_ccny_qa_vec, 'VariableNames', var_names);
+queens_table = table(tempo_pandora_queens_date_vec, tempo_queens_no2_vec,  pandora_queens_no2_vec, tempo_queens_qa_vec, 'VariableNames', var_names);
+bronx_table = table(tempo_pandora_bronx_date_vec, tempo_bronx_no2_vec, pandora_bronx_no2_vec, tempo_bronx_qa_vec, 'VariableNames', var_names);
+
+save(fullfile('./', 'processed_data/', 'data_tables.mat') ,"ccny_table", "queens_table", "bronx_table")
 
 %% 
 

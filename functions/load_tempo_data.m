@@ -1,8 +1,8 @@
 function output = load_tempo_data(file)
 
     tropospheric_no2 = ncread(file, 'product/vertical_column_troposphere');
-    stratospheric_no2 = ncread(file, 'product/vertical_column_stratosphere');
-    total_no2 = ncread(file, 'product/vertical_column_total');
+    % stratospheric_no2 = ncread(file, 'product/vertical_column_stratosphere');
+    % total_no2 = ncread(file, 'product/vertical_column_total');
     qa_value = ncread(file, 'product/main_data_quality_flag');
 
 
@@ -12,8 +12,8 @@ function output = load_tempo_data(file)
 
     output = struct;
     output.tropospheric = tropospheric_no2;
-    output.stratospheric = stratospheric_no2;
-    output.total = total_no2;
+    % output.stratospheric = stratospheric_no2;
+    % output.total = total_no2;
     output.qa_value = qa_value;
     output.lat = lat;
     output.lon = lon;
