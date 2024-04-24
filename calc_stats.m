@@ -4,8 +4,6 @@ clearvars;
 
 load(fullfile('./', 'processed_data/', 'data_tables.mat'))
 
-
-
 %% Ordinary Least Squares
 
 ccny_ls_model = fitlm(ccny_table.pandora_no2, ccny_table.tempo_no2, 'VarNames', {'CCNY Pandora', 'TEMPO NO2'}); % CCNY Pandora
@@ -30,6 +28,9 @@ bronx_ls_slope = bronx_ls_model.Coefficients.Estimate(2);
 total_ls_intercept = total_ls_model.Coefficients.Estimate(1);
 total_ls_slope = total_ls_model.Coefficients.Estimate(2);
 
+slope = [ccny_ls_slope; queens_ls_slope; bronx_ls_slope; total_ls_slope];
+n_obs = [length(ccny_table.pandora_no2); length(queens_table.pandora_no2); length(bronx_table.pandora_no2); length(tempo_total)];
+
 
 figure(1)
 plot(ccny_ls_model)
@@ -52,6 +53,26 @@ xlim([0 10^17])
 ylim([0 10^17])
 
 
+
 %% Mean Difference
 
+ccny_md = mean(ccny_table.tempo_no2 - ccny_table.pandora_no2);
+queens_md = mean(queens_table.tempo_no2 - queens_table.pandora_no2);
+bronx_md = mean(bronx_table.tempo_no2 - bronx_table.pandora_no2);
+total_md = mean(tempo_total - pandora_total);
+
+MD = [ccny_md; queens_md ;bronx_md; total_md];
+
+
 %% Mean Relative Difference
+
+ccny_mrd = mean((ccny_table.tempo_no2 - ccny_table.pandora_no2)./ccny_table.pandora_no2);
+queens_mrd = mean((queens_table.tempo_no2 - queens_table.pandora_no2)./queens_table.pandora_no2);
+bronx_mrd = mean((bronx_table.tempo_no2 - bronx_table.pandora_no2)./bronx_table.pandora_no2);
+total_mrd = mean((tempo_total - pandora_total)./pandora_total);
+
+MRD = [ccny_mrd; queens_mrd ;bronx_mrd; total_mrd];
+
+%%
+
+statistics = table(MD, MRD, slope, n_obs);

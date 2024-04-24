@@ -16,11 +16,12 @@ latq_new = reshape(latgrid, [], 1);
 lonq_new = reshape(longrid, [], 1);
 
 
+% input_file = 'input_dates.txt';
+input_file = 'aug.txt';
+% input_file = 'dec.txt';
+% input_file = 'all_dates.txt';
 
-% folders = read_batch('input_dates_aug.txt');
-folders = read_batch('input_dates_dec.txt');
-% folders = read_batch('input_dates_all.txt');
-% folders = read_batch('input_dates.txt');
+folders = read_batch(fullfile('input_files/',input_file));
 
 full_avg_weekday = NaN(size(latgrid,1) ,size(latgrid,2), length(folders));
 full_avg_weekend = NaN(size(latgrid,1) ,size(latgrid,2), length(folders));
@@ -89,16 +90,27 @@ no2_max_weekend = max(no2_avg_weekend, [], 'all');
 no2_min = min([no2_min_weekday no2_min_weekday], [], 'all');
 no2_max = max([no2_max_weekday no2_max_weekday], [], 'all');
 
+save_path = fullfile('./','results/', 'tempo_avg_no2/');
 
-figure(1)
+figure;
 title = 'Average Tropospheric NO2 [molec/m^2] - Weekdays';
 map_plot(latgrid,longrid,no2_avg_weekday,title,lat_bounds,lon_bounds, [no2_min no2_max])
+
+saveas(gcf, fullfile(save_path, ['tempo_avg_no2_weekdays_', input_file, '.png']))
+close(gcf);
  
-figure(2)
+
+figure;
 title = 'Average Tropospheric NO2 [molec/m^2] - Weekend';
 map_plot(latgrid,longrid,no2_avg_weekend,title,lat_bounds,lon_bounds, [no2_min no2_max])
 
-figure(3)
+saveas(gcf, fullfile(save_path, ['tempo_avg_no2_weekends_', input_file, '.png']))
+close(gcf);
+
+
+figure;
 title = 'Average Tropospheric NO2 [molec/m^2] - All days';
 map_plot(latgrid,longrid,no2_avg,title,lat_bounds,lon_bounds, [no2_min no2_max])
 
+saveas(gcf, fullfile(save_path, ['tempo_avg_no2_all_', input_file, '.png']))
+close(gcf);

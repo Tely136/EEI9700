@@ -1,5 +1,16 @@
 
+load(fullfile('./', 'processed_data/', 'data_tables.mat'))
 [tropomi_path,tempo_path,pandora_path,ground_path] = get_paths();
+
+conversion_factor = 6.02214 * 10^19; % conversion from mol/cm^2 to molec/m^2
+
+
+% Pandora Data
+ccny_pandora_data = load([pandora_path, 'CCNY\', 'Pandora135s1_ManhattanNY-CCNY_L2_rnvh3p1-8']);
+ccny_pandora_no2 = ccny_pandora_data.pandora_data.no2_trop * conversion_factor;
+ccny_pandora_dates = ccny_pandora_data.pandora_data.date;
+ccny_pandora_dates.TimeZone = 'UTC';
+ccny_pandora_qa = ccny_pandora_data.pandora_data.qa;
 
 
 A = readtable([ground_path, 'is52_no2.xls']);
@@ -18,9 +29,6 @@ index = (ccny_pandora_qa == 0 | ccny_pandora_qa == 1 | ccny_pandora_qa == 10 | c
 ccny_pandora_no2_plt = ccny_pandora_no2(index);
 ccny_pandora_dates_plt = ccny_pandora_dates(index); 
 
-% TODO (MAYBE): smooth data over 10 minute window
-% ccny_pandora_no2_plt = movmean(ccny_pandora_no2_plt, 10);
-
 
 
 %%
@@ -33,7 +41,7 @@ figure;
 hold on
 yyaxis left
 scatter(ccny_pandora_dates_plt, ccny_pandora_no2_plt, mk_size, "blue", "filled")
-scatter(tempo_pandora_ccny_date_arr, pandora_ccny_no2_arr, mk_size, "red", "filled")
+scatter(ccny_table.time, ccny_table.tempo_no2, mk_size, "red", "filled")
 ylabel('Tropospheric NO2 Column [molec/m^2]')
 
 

@@ -16,4 +16,6 @@ function dates = read_batch(filename)
     
         end
     end
+
+    fclose(fid);
 end

@@ -7,8 +7,6 @@ set(0,'DefaultFigureWindowStyle','docked')
 
 conversion_factor = 6.02214 * 10^19; % conversion from mol/cm^2 to molec/m^2
 
-disp('Loading data...')
-
 % Pandora Data
 ccny_pandora_data = load([pandora_path, 'CCNY\', 'Pandora135s1_ManhattanNY-CCNY_L2_rnvh3p1-8']);
 ccny_pandora_no2 = ccny_pandora_data.pandora_data.no2_trop * conversion_factor;
@@ -58,9 +56,12 @@ tempo_pandora_bronx_date_arr = NaT(y,y); tempo_pandora_bronx_date_arr.TimeZone =
 
 
 % Tempo data
-folders = read_batch('input_dates.txt');
-% folders = read_batch('input_dates_aug.txt');
-% folders = read_batch('input_dates_all.txt');
+% input_file = 'input_dates.txt';
+% input_file = 'aug.txt';
+% input_file = 'dec.txt';
+input_file = 'all_dates.txt';
+
+folders = read_batch(fullfile('input_files/',input_file));
 
 for i = 1:length(folders)
     folder_name = folders(i);
@@ -178,6 +179,8 @@ function [tempo_no2_site, tempo_qa_site, tempo_time_site, avg, skip] = extract_d
     if u == 0
         skip = true; % skip if all Pandora data in window was low QA
     end
+
+    avg = avg./u;
 end
 
 
