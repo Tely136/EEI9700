@@ -1,5 +1,8 @@
+clc
+clearvars
 
-load(fullfile('./', 'processed_data/', 'data_tables.mat'))
+file = uigetfile(fullfile('./', 'processed_data/'));
+load(fullfile('./', 'processed_data/', file))
 [tropomi_path,tempo_path,pandora_path,ground_path] = get_paths();
 
 conversion_factor = 6.02214 * 10^19; % conversion from mol/cm^2 to molec/m^2

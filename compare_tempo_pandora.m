@@ -8,6 +8,7 @@ set(0,'DefaultFigureWindowStyle','docked')
 conversion_factor = 6.02214 * 10^19; % conversion from mol/cm^2 to molec/m^2
 
 % Pandora Data
+% CCNY ASRC Building
 ccny_pandora_data = load([pandora_path, 'CCNY\', 'Pandora135s1_ManhattanNY-CCNY_L2_rnvh3p1-8']);
 ccny_pandora_no2 = ccny_pandora_data.pandora_data.no2_trop * conversion_factor;
 ccny_pandora_dates = ccny_pandora_data.pandora_data.date;
@@ -15,7 +16,9 @@ ccny_pandora_dates.TimeZone = 'UTC';
 ccny_pandora_qa = ccny_pandora_data.pandora_data.qa;
 ccny_pandora_lat = 40.8153;
 ccny_pandora_lon = -73.9505;
+ccny_pandora_alt = 34; % m
 
+% Queens College
 queens_pandora_data = load([pandora_path, 'Queens\', 'Pandora55s1_QueensNY_L2_rnvh3p1-8']);
 queens_pandora_no2 = queens_pandora_data.pandora_data.no2_trop * conversion_factor;
 queens_pandora_dates = queens_pandora_data.pandora_data.date;
@@ -23,7 +26,9 @@ queens_pandora_dates.TimeZone = 'UTC';
 queens_pandora_qa = queens_pandora_data.pandora_data.qa;
 queens_pandora_lat = 40.7361;
 queens_pandora_lon = -73.8215;
+queens_pandora_alt = 25; % m
 
+% New York Botanical Gardens
 bronx_pandora_data = load([pandora_path, 'Bronx180\', 'Pandora180s1_BronxNY_L2_rnvh3p1-8']);
 bronx_pandora_no2 = bronx_pandora_data.pandora_data.no2_trop * conversion_factor;
 bronx_pandora_dates = bronx_pandora_data.pandora_data.date;
@@ -31,6 +36,7 @@ bronx_pandora_dates.TimeZone = 'UTC';
 bronx_pandora_qa = bronx_pandora_data.pandora_data.qa;
 bronx_pandora_lat = 40.8679;
 bronx_pandora_lon = -73.8781;
+bronx_pandora_alt = 31; % m
 
 sites = struct;
 sites.names = ["CCNY" "Queens" "Bronx"];
@@ -43,16 +49,19 @@ tempo_ccny_no2_arr = nan(y,y);
 tempo_ccny_qa_arr = nan(y,y);
 pandora_ccny_no2_arr = nan(y,y);
 tempo_pandora_ccny_date_arr = NaT(y,y); tempo_pandora_ccny_date_arr.TimeZone = 'UTC';
+ccny_weekday = zeros(y,y);
 
 tempo_queens_no2_arr = nan(y,y);
 tempo_queens_qa_arr = nan(y,y);
 pandora_queens_no2_arr = nan(y,y);
 tempo_pandora_queens_date_arr = NaT(y,y); tempo_pandora_queens_date_arr.TimeZone = 'UTC';
+queens_weekday = zeros(y,y);
 
 tempo_bronx_no2_arr = nan(y,y);
 tempo_bronx_qa_arr = nan(y,y);
 pandora_bronx_no2_arr = nan(y,y);
 tempo_pandora_bronx_date_arr = NaT(y,y); tempo_pandora_bronx_date_arr.TimeZone = 'UTC';
+bronx_weekday = zeros(y,y);
 
 
 % Tempo data
@@ -91,6 +100,7 @@ for i = 1:length(folders)
             tempo_ccny_qa_arr(i,j) = tempo_qa_ccny;
             tempo_pandora_ccny_date_arr(i,j) = tempo_time_ccny;
             pandora_ccny_no2_arr(i, j) = ccny_pandora_avg_no2;
+            ccny_weekday(i,j) = weekday(tempo_time_ccny);
     
         end
 
@@ -102,6 +112,7 @@ for i = 1:length(folders)
             tempo_queens_qa_arr(i,j) = tempo_qa_queens;
             tempo_pandora_queens_date_arr(i,j) = tempo_time_queens;
             pandora_queens_no2_arr(i, j) = queens_pandora_avg_no2;
+            queens_weekday(i,j) = weekday(tempo_time_queens);
     
         end
 
@@ -113,6 +124,7 @@ for i = 1:length(folders)
             tempo_bronx_qa_arr(i,j) = tempo_qa_bronx;
             tempo_pandora_bronx_date_arr(i,j) = tempo_time_bronx;
             pandora_bronx_no2_arr(i, j) = bronx_pandora_avg_no2;
+            bronx_weekday(i,j) = weekday(tempo_time_bronx);
     
         end
     end
@@ -122,23 +134,26 @@ end
 [tempo_ccny_qa_vec, ~] = reshape_remove_nan(tempo_ccny_qa_arr, i);
 [tempo_pandora_ccny_date_vec, ~] = reshape_remove_nan(tempo_pandora_ccny_date_arr, i);
 [pandora_ccny_no2_vec, ~] = reshape_remove_nan(pandora_ccny_no2_arr, i);
+[ccny_weekday_vec, ~] = reshape_remove_nan(ccny_weekday, i);
 
 [tempo_queens_no2_vec, i] = reshape_remove_nan(tempo_queens_no2_arr);
 [tempo_queens_qa_vec, ~] = reshape_remove_nan(tempo_queens_qa_arr, i);
 [tempo_pandora_queens_date_vec, ~] = reshape_remove_nan(tempo_pandora_queens_date_arr, i);
 [pandora_queens_no2_vec, ~] = reshape_remove_nan(pandora_queens_no2_arr, i);
+[queens_weekday_vec, ~] = reshape_remove_nan(queens_weekday, i);
 
 [tempo_bronx_no2_vec, i] = reshape_remove_nan(tempo_bronx_no2_arr);
 [tempo_bronx_qa_vec, ~] = reshape_remove_nan(tempo_bronx_qa_arr, i);
 [tempo_pandora_bronx_date_vec, ~] = reshape_remove_nan(tempo_pandora_bronx_date_arr, i);
 [pandora_bronx_no2_vec, ~] = reshape_remove_nan(pandora_bronx_no2_arr, i);
+[bronx_weekday_vec, ~] = reshape_remove_nan(bronx_weekday, i);
 
-var_names = {'time', 'tempo_no2', 'pandora_no2', 'qa'};
-ccny_table = table(tempo_pandora_ccny_date_vec, tempo_ccny_no2_vec, pandora_ccny_no2_vec, tempo_ccny_qa_vec, 'VariableNames', var_names);
-queens_table = table(tempo_pandora_queens_date_vec, tempo_queens_no2_vec,  pandora_queens_no2_vec, tempo_queens_qa_vec, 'VariableNames', var_names);
-bronx_table = table(tempo_pandora_bronx_date_vec, tempo_bronx_no2_vec, pandora_bronx_no2_vec, tempo_bronx_qa_vec, 'VariableNames', var_names);
+var_names = {'time', 'tempo_no2', 'pandora_no2', 'qa', 'weekday'};
+ccny_table = table(tempo_pandora_ccny_date_vec, tempo_ccny_no2_vec, pandora_ccny_no2_vec, tempo_ccny_qa_vec, ccny_weekday_vec, 'VariableNames', var_names);
+queens_table = table(tempo_pandora_queens_date_vec, tempo_queens_no2_vec,  pandora_queens_no2_vec, tempo_queens_qa_vec, queens_weekday_vec, 'VariableNames', var_names);
+bronx_table = table(tempo_pandora_bronx_date_vec, tempo_bronx_no2_vec, pandora_bronx_no2_vec, tempo_bronx_qa_vec, bronx_weekday_vec, 'VariableNames', var_names);
 
-save(fullfile('./', 'processed_data/', 'data_tables.mat') ,"ccny_table", "queens_table", "bronx_table")
+save(fullfile('./', 'processed_data/', [input_file, '_data_tables.mat']) ,"ccny_table", "queens_table", "bronx_table")
 
 %% 
 
