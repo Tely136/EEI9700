@@ -6,7 +6,7 @@ function map_plot(lat, lon, param, title_str, lat_bounds, lon_bounds, color_lim,
         title_str 
         lat_bounds 
         lon_bounds 
-        color_lim 
+        color_lim  = []
         sites = struct([])
     end
 
@@ -28,8 +28,10 @@ function map_plot(lat, lon, param, title_str, lat_bounds, lon_bounds, color_lim,
     end
 
     colorbar
-    ax = gca;
-    ax.CLim = color_lim;
+    if ~isempty(color_lim)
+        ax = gca;
+        ax.CLim = color_lim;
+    end
     title(title_str)
 
 end

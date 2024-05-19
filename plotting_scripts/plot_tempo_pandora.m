@@ -1,65 +1,41 @@
 close all
+clearvars
 clc
 
-tempo_ccny_no2_vec = reshape(tempo_ccny_no2_arr, [], 1); tempo_ccny_no2_vec(isnan(tempo_ccny_no2_vec)) = [];
-tempo_ccny_qa_vec = reshape(tempo_ccny_qa_arr, [], 1); tempo_ccny_qa_vec(isnan(tempo_ccny_qa_vec)) = [];
-pandora_ccny_no2_vec = reshape(pandora_ccny_no2_arr, [], 1); pandora_ccny_no2_vec(isnan(pandora_ccny_no2_vec)) = [];
+[tropomi_path,tempo_path,pandora_path,ground_path] = get_paths();
 
-tempo_queens_no2_vec = reshape(tempo_queens_no2_arr, [], 1); tempo_queens_no2_vec(isnan(tempo_queens_no2_vec)) = [];
-tempo_queens_qa_vec = reshape(tempo_queens_qa_arr, [], 1); tempo_queens_qa_vec(isnan(tempo_queens_qa_vec)) = [];
-pandora_queens_no2_vec = reshape(pandora_queens_no2_arr, [], 1); pandora_queens_no2_vec(isnan(pandora_queens_no2_vec)) = [];
+load(fullfile(tempo_path, 'tempo_data.mat'))
+load(fullfile(pandora_path, 'pandora_data.mat'))
 
-tempo_bronx_no2_vec = reshape(tempo_bronx_no2_arr, [], 1); tempo_bronx_no2_vec(isnan(tempo_bronx_no2_vec)) = [];
-tempo_bronx_qa_vec = reshape(tempo_bronx_qa_arr, [], 1); tempo_bronx_qa_vec(isnan(tempo_bronx_qa_vec)) = [];
-pandora_bronx_no2_vec = reshape(pandora_bronx_no2_arr, [], 1); pandora_bronx_no2_vec(isnan(pandora_bronx_no2_vec)) = [];
-
-y1 = [0, max(tempo_ccny_no2_vec)];
-x1 = [0, max(tempo_ccny_no2_vec)];
-
-i = isnan(tempo_ccny_no2_vec);
-tempo_ccny_no2_arr(i) = [];
-pandora_ccny_no2_arr(i) = [];
-
-X = [ones(length(pandora_ccny_no2_vec),1) pandora_ccny_no2_vec];
-
-format long
-b = X\tempo_ccny_no2_vec;
-y_fit = X * b;
-
-R = 1 - sum((tempo_ccny_no2_vec - y_fit).^2)/sum((tempo_ccny_no2_vec - mean(tempo_ccny_no2_vec)).^2);
-
-fit = ['y = ', num2str(b(1)), ' + ', num2str(b(2)), 'x', newline, 'R = ', num2str(R)];
+conversion_factor = 6.02214 * 10^19; % conversion from mol/cm^2 to molec/m^2
 
 
 %%
+close all
 
-% Scatter plot of all data
+marker_size = 75;
+linewidth = 2.5;
+
+start_time = datetime(2023,8,9,13,0,0);
+end_time = datetime(2023,8,9,22,0,0);
+
+
+temp_tempo = tempo_data(tempo_data.Solar_Zenith < 70 & tempo_data.qa==0, :);
+temp_pandora = pandora_data((pandora_data.qa == 0 |pandora_data.qa == 1 |pandora_data.qa == 10 |pandora_data.qa == 11), :);
+
+
+% ccny
+ccny_tempo = temp_tempo(temp_tempo.Site=='CCNY',:);
+ccny_pandora = temp_pandora(temp_pandora.Site=='CCNY',:);
+
 figure;
 hold on
-scatter(pandora_ccny_no2_vec, tempo_ccny_no2_vec)
-plot(pandora_ccny_no2_vec, y_fit)
-plot(x1, y1)
-xlabel('Pandora Tropospheriv NO2 Column []')
-ylabel('TEMPO Tropospheric NO2 Column[]')
-xlim([0 5*10^16])
-ylim([0 5*10^16])
-text(1*10^16, 4*10^16, fit)
 
-hold off
-
-
-% Scatter plot of all data
-figure;
-hold on
-scatter(pandora_ccny_no2_vec, tempo_ccny_no2_vec)
-scatter(pandora_queens_no2_vec, tempo_queens_no2_vec)
-scatter(pandora_bronx_no2_vec, tempo_bronx_no2_vec)
-
-% plot(pandora_ccny_no2_vec, y_fit)
-% plot(x1, y1)
-xlabel('Pandora Tropospheriv NO2 Column []')
-ylabel('TEMPO Tropospheric NO2 Column[]')
-xlim([0 5*10^16])
-ylim([0 5*10^16])
+plot(ccny_pandora.Datetime, ccny_pandora.NO2.*conversion_factor, 'LineWidth', linewidth)
+scatter(ccny_tempo.Datetime, ccny_tempo.NO2, marker_size, 'black', 'filled')
+title('NO2 Vertical Column Density [molec/cm^2]')
+xlim([start_time, end_time])
+legend('Pandora NO2 VCD', 'TEMPO NO2 VCD')
+fontsize(20, "points");
 
 hold off
